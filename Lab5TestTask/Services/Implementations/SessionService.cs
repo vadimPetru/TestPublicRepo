@@ -22,6 +22,7 @@ public class SessionService : ISessionService
     public async Task<Session> GetSessionAsync()
     {
         return await _dbContext.Sessions
+          .AsNoTracking()
           .Where(session => session.DeviceType == DeviceType.Desktop)
           .OrderBy(item => item.StartedAtUTC)
           .FirstOrDefaultAsync();
@@ -31,9 +32,7 @@ public class SessionService : ISessionService
     {
           return await _dbContext.Sessions
         .AsNoTracking()
-        .Include(item => item.User)
-        .Where(item => item.User.Status == UserStatus.Active
-        && item.EndedAtUTC.Year < 2025)
+        .Where(s => s.User.Status == UserStatus.Active && s.EndedAtUTC.Year < 2025)
         .ToListAsync();
     }
 }

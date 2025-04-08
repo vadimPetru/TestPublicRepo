@@ -22,7 +22,6 @@ public class UserService : IUserService
     {
         return await _dbContext.Users
                     .AsNoTracking()
-                    .Include(item => item.Sessions)
                     .OrderByDescending(item => item.Sessions.Count)
                     .FirstOrDefaultAsync();
     }
@@ -31,7 +30,7 @@ public class UserService : IUserService
     {
         return await _dbContext.Users
           .AsNoTracking()
-         .Include(user => user.Sessions.Where(session => session.DeviceType == Enums.DeviceType.Mobile))
+         .Where(user => user.Sessions.Any(session => session.DeviceType == Enums.DeviceType.Mobile))
          .ToListAsync();
     }
 }
