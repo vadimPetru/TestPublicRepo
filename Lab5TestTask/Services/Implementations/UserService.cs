@@ -1,7 +1,8 @@
-﻿using Lab5TestTask.Data;
+using Lab5TestTask.Data;
 using Lab5TestTask.Models;
 using Lab5TestTask.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.AccessControl;
 
 namespace Lab5TestTask.Services.Implementations;
 
@@ -19,11 +20,18 @@ public class UserService : IUserService
     }
     public async Task<User> GetUserAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users
+                    .AsNoTracking()
+                    .Include(item => item.Sessions)
+                    .OrderByDescending(item => item.Sessions.Count)
+                    .FirstOrDefaultAsync();
     }
 
     public async Task<List<User>> GetUsersAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users
+          .AsNoTracking()
+         .Include(user => user.Sessions.Where(session => session.DeviceType == Enums.DeviceType.Mobile))
+         .ToListAsync();
     }
 }
